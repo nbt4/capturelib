@@ -1,0 +1,52 @@
+version: 1.0.{build}
+
+# Build only on main branch and tags
+branches:
+  only:
+    - main
+
+# Build environment
+image: Visual Studio 2022
+
+# Clone settings
+clone_depth: 1
+
+# Environment variables
+environment:
+  GOPATH: c:\gopath
+  GOVERSION: 1.21
+
+# Install Go
+install:
+  - rmdir c:\go /s /q
+  - appveyor DownloadFile https://go.dev/dl/go1.21.0.windows-amd64.msi
+  - msiexec /i go1.21.0.windows-amd64.msi /quiet
+  - set PATH=%GOPATH%\bin;c:\go\bin;%PATH%
+  - go version
+  - go env
+
+# Build script
+build_script:
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - go mod download
+  - go build -ldflags="-H windowsgui -s -w" -o CaptureLib.exe
+
+# Test script (optional)
+test_script:
+  - go test ./...
+
+# Artifacts
+artifacts:
+  - path: CaptureLib.exe
+    name: CaptureLib-Windows
+
+# Deploy to GitHub Releases (on tags)
+deploy:
+  - provider: GitHub
+    release: $(APPVEYOR_REPO_TAG_NAME)
+    description: 'CaptureLib Release'
+    auth_token:
+      secure: YOUR_GITHUB_TOKEN_HERE
+    artifact: CaptureLib-Windows
+    on:
+      APPVEYOR_REPO_TAG: true
