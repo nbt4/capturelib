@@ -1,0 +1,73 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+      
+      - name: Install dependencies
+        run: go mod download
+      
+      - name: Build Windows executable
+        run: go build -ldflags="-H windowsgui -s -w" -o CaptureLib.exe
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CaptureLib-Windows
+          path: CaptureLib.exe
+      
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: CaptureLib.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev xorg-dev
+      
+      - name: Install Go dependencies
+        run: go mod download
+      
+      - name: Build Linux executable
+        run: go build -o capturelib
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CaptureLib-Linux
+          path: capturelib
+      
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: capturelib
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
