@@ -35,8 +35,11 @@ func (s *Scanner) ScanDirectory(path string, recursive bool) (int, error) {
 			return nil
 		}
 
-		// Only process .c2o files
-		if !strings.HasSuffix(strings.ToLower(info.Name()), ".c2o") {
+		// Only process Capture files (.c2o, .c2s, .c2p)
+		lowerName := strings.ToLower(info.Name())
+		if !strings.HasSuffix(lowerName, ".c2o") && 
+		   !strings.HasSuffix(lowerName, ".c2s") && 
+		   !strings.HasSuffix(lowerName, ".c2p") {
 			return nil
 		}
 

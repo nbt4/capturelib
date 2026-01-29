@@ -1,6 +1,6 @@
 # 📦 CaptureLib
 
-Desktop application for managing Capture (.c2o) stage design files with drag & drop support.
+Desktop application for managing Capture stage design files (.c2o, .c2s, .c2p) with drag & drop support.
 
 ## ✨ Features
 
