@@ -12,7 +12,6 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 	"fyne.io/fyne/v2/theme"
-	"fyne.io/fyne/v2/storage"
 )
 
 type App struct {
